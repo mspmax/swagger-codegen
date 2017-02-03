@@ -19,6 +19,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This uses Volley as default network library and not maintained on a regular basis.
+ *
+ */
+@Deprecated
 public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(AndroidClientCodegen.class);
     public static final String USE_ANDROID_MAVEN_GRADLE_PLUGIN = "useAndroidMavenGradlePlugin";

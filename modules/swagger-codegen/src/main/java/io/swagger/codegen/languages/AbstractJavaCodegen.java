@@ -69,7 +69,7 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
         supportsInheritance = true;
         modelTemplateFiles.put("model.mustache", ".java");
         apiTemplateFiles.put("api.mustache", ".java");
-        apiTestTemplateFiles.put("api_test.mustache", ".java");
+        //apiTestTemplateFiles.put("api_test.mustache", ".java");
         modelDocTemplateFiles.put("model_doc.mustache", ".md");
         apiDocTemplateFiles.put("api_doc.mustache", ".md");
 
@@ -795,10 +795,10 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
         CodegenOperation op = super.fromOperation(path, httpMethod, operation, definitions, swagger);
 
         op.path = sanitizePath(op.path);
-        
+
         return op;
     }
-    
+
     private static CodegenModel reconcileInlineEnums(CodegenModel codegenModel, CodegenModel parentCodegenModel) {
         // This generator uses inline classes to define enums, which breaks when
         // dealing with models that have subTypes. To clean this up, we will analyze
