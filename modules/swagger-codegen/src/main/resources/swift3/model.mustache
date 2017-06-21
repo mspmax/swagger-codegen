@@ -26,7 +26,8 @@ public enum {{classname}}: {{dataType}} {
 public typealias {{classname}} = {{dataType}}
 {{/vars.isEmpty}}
 {{^vars.isEmpty}}
-open class {{classname}}: JSONEncodable {
+open class {{classname}}: {{#parent}}{{{parent}}}{{/parent}}{{^parent}}JSONEncodable{{/parent}} {
+
 {{#vars}}
 {{#isEnum}}
     public enum {{enumName}}: {{^isContainer}}{{datatype}}{{/isContainer}}{{#isContainer}}String{{/isContainer}} { {{#allowableValues}}{{#enumVars}}
@@ -45,20 +46,35 @@ open class {{classname}}: JSONEncodable {
 {{/isEnum}}
 {{/vars}}
 
+{{#additionalPropertiesType}}
+    public var additionalProperties: [AnyHashable:{{{additionalPropertiesType}}}] = [:]
+
+{{/additionalPropertiesType}}
 {{^unwrapRequired}}
-    public init() {}
-{{/unwrapRequired}}
+    {{^parent}}public init() {}{{/parent}}{{/unwrapRequired}}
 {{#unwrapRequired}}
     public init({{#allVars}}{{^-first}}, {{/-first}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}?=nil{{/required}}{{/allVars}}) {
-        {{#allVars}}
+        {{#vars}}
         self.{{name}} = {{name}}
-        {{/allVars}}
-    }
-{{/unwrapRequired}}
+        {{/vars}}
+    }{{/unwrapRequired}}
+{{#additionalPropertiesType}}
+    public subscript(key: AnyHashable) -> {{{additionalPropertiesType}}}? {
+        get {
+            if let value = additionalProperties[key] {
+                return value
+            }
+            return nil
+        }
 
+        set {
+            additionalProperties[key] = newValue
+        }
+    }
+{{/additionalPropertiesType}}
     // MARK: JSONEncodable
-    func encodeToJSON() -> Any {
-        var nillableDictionary = [String:Any?](){{#vars}}{{#isNotContainer}}{{#isPrimitiveType}}{{^isEnum}}{{#isInteger}}
+    {{#parent}}override {{/parent}}open func encodeToJSON() -> Any {
+        var nillableDictionary = {{#parent}}super.encodeToJSON() as? [String:Any?] ?? {{/parent}}[String:Any?](){{#vars}}{{#isNotContainer}}{{#isPrimitiveType}}{{^isEnum}}{{#isInteger}}
         nillableDictionary["{{baseName}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.encodeToJSON(){{/isInteger}}{{#isLong}}
         nillableDictionary["{{baseName}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.encodeToJSON(){{/isLong}}{{^isLong}}{{^isInteger}}
         nillableDictionary["{{baseName}}"] = self.{{name}}{{/isInteger}}{{/isLong}}{{/isEnum}}{{/isPrimitiveType}}{{#isEnum}}
@@ -66,6 +82,15 @@ open class {{classname}}: JSONEncodable {
         nillableDictionary["{{baseName}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.encodeToJSON(){{/isPrimitiveType}}{{/isNotContainer}}{{#isContainer}}{{^isEnum}}
         nillableDictionary["{{baseName}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.encodeToJSON(){{/isEnum}}{{#isEnum}}{{#isListContainer}}
         nillableDictionary["{{baseName}}"] = self.{{name}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}.map({$0.rawValue}).encodeToJSON(){{/isListContainer}}{{#isMapContainer}}//TODO: handle enum map scenario{{/isMapContainer}}{{/isEnum}}{{/isContainer}}{{/vars}}
+
+        {{#additionalPropertiesType}}
+        for (key, value) in additionalProperties {
+            if let key = key as? String {
+               nillableDictionary[key] = value
+            }
+        }
+
+        {{/additionalPropertiesType}}
         let dictionary: [String:Any] = APIHelper.rejectNil(nillableDictionary) ?? [:]
         return dictionary
     }

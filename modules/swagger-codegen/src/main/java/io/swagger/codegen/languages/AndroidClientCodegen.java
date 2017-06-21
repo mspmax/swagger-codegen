@@ -59,6 +59,9 @@ public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfi
                     "localVarFormParams", "localVarContentTypes", "localVarContentType",
                     "localVarResponse", "localVarBuilder", "authNames", "basePath", "apiInvoker",
 
+                    // due to namespace collusion
+                    "Object",
+
                     // android reserved words
                     "abstract", "continue", "for", "new", "switch", "assert",
                     "default", "if", "package", "synchronized", "boolean", "do", "goto", "private",
@@ -66,7 +69,7 @@ public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfi
                     "import", "public", "throws", "case", "enum", "instanceof", "return", "transient",
                     "catch", "extends", "int", "short", "try", "char", "final", "interface", "static",
                     "void", "class", "finally", "long", "strictfp", "volatile", "const", "float",
-                    "native", "super", "while")
+                    "native", "super", "while", "null")
         );
 
         languageSpecificPrimitives = new HashSet<String>(
@@ -121,7 +124,10 @@ public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfi
     }
 
     @Override
-    public String escapeReservedWord(String name) {
+    public String escapeReservedWord(String name) {           
+        if(this.reservedWordsMappings().containsKey(name)) {
+            return this.reservedWordsMappings().get(name);
+        }
         return "_" + name;
     }
 
@@ -392,7 +398,6 @@ public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfi
 
         // need to put back serializableModel (boolean) into additionalProperties as value in additionalProperties is string
         additionalProperties.put(CodegenConstants.SERIALIZABLE_MODEL, serializableModel);
-        LOGGER.info("CodegenConstants.SERIALIZABLE_MODEL = " + additionalProperties.get(CodegenConstants.SERIALIZABLE_MODEL));
 
         //make api and model doc path available in mustache template
         additionalProperties.put( "apiDocPath", apiDocPath );

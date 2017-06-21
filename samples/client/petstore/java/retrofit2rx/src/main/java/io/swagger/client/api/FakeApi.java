@@ -4,28 +4,77 @@ import io.swagger.client.CollectionFormats.*;
 
 import rx.Observable;
 
+
 import retrofit2.http.*;
 
 import okhttp3.RequestBody;
 
-import io.swagger.client.model.Client;
-import org.joda.time.LocalDate;
-import org.joda.time.DateTime;
 import java.math.BigDecimal;
+import io.swagger.client.model.Client;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import io.swagger.client.model.OuterComposite;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public interface FakeApi {
   /**
-   * To test \&quot;client\&quot; model
    * 
+   * Test serialization of outer boolean types
+   * @param body Input boolean as post body (optional)
+   * @return Call&lt;Boolean&gt;
+   */
+  @POST("fake/outer/boolean")
+  Observable<Boolean> fakeOuterBooleanSerialize(
+    @retrofit2.http.Body Boolean body
+  );
+
+  /**
+   * 
+   * Test serialization of object with outer number type
+   * @param body Input composite as post body (optional)
+   * @return Call&lt;OuterComposite&gt;
+   */
+  @POST("fake/outer/composite")
+  Observable<OuterComposite> fakeOuterCompositeSerialize(
+    @retrofit2.http.Body OuterComposite body
+  );
+
+  /**
+   * 
+   * Test serialization of outer number types
+   * @param body Input number as post body (optional)
+   * @return Call&lt;BigDecimal&gt;
+   */
+  @POST("fake/outer/number")
+  Observable<BigDecimal> fakeOuterNumberSerialize(
+    @retrofit2.http.Body BigDecimal body
+  );
+
+  /**
+   * 
+   * Test serialization of outer string types
+   * @param body Input string as post body (optional)
+   * @return Call&lt;String&gt;
+   */
+  @POST("fake/outer/string")
+  Observable<String> fakeOuterStringSerialize(
+    @retrofit2.http.Body String body
+  );
+
+  /**
+   * To test \&quot;client\&quot; model
+   * To test \&quot;client\&quot; model
    * @param body client model (required)
    * @return Call&lt;Client&gt;
    */
-  
+  @Headers({
+    "Content-Type:application/json"
+  })
   @PATCH("fake")
   Observable<Client> testClientModel(
     @retrofit2.http.Body Client body
@@ -50,7 +99,6 @@ public interface FakeApi {
    * @param paramCallback None (optional)
    * @return Call&lt;Void&gt;
    */
-  
   @retrofit2.http.FormUrlEncoded
   @POST("fake")
   Observable<Void> testEndpointParameters(
@@ -59,7 +107,7 @@ public interface FakeApi {
 
   /**
    * To test enum parameters
-   * 
+   * To test enum parameters
    * @param enumFormStringArray Form parameter enum test (string array) (optional)
    * @param enumFormString Form parameter enum test (string) (optional, default to -efg)
    * @param enumHeaderStringArray Header parameter enum test (string array) (optional)
@@ -70,11 +118,10 @@ public interface FakeApi {
    * @param enumQueryDouble Query parameter enum test (double) (optional)
    * @return Call&lt;Void&gt;
    */
-  
   @retrofit2.http.FormUrlEncoded
   @GET("fake")
   Observable<Void> testEnumParameters(
-    @retrofit2.http.Field("enum_form_string_array") List<String> enumFormStringArray, @retrofit2.http.Field("enum_form_string") String enumFormString, @retrofit2.http.Header("enum_header_string_array") List<String> enumHeaderStringArray, @retrofit2.http.Header("enum_header_string") String enumHeaderString, @retrofit2.http.Query("enum_query_string_array") CSVParams enumQueryStringArray, @retrofit2.http.Query("enum_query_string") String enumQueryString, @retrofit2.http.Query("enum_query_integer") BigDecimal enumQueryInteger, @retrofit2.http.Field("enum_query_double") Double enumQueryDouble
+    @retrofit2.http.Field("enum_form_string_array") List<String> enumFormStringArray, @retrofit2.http.Field("enum_form_string") String enumFormString, @retrofit2.http.Header("enum_header_string_array") List<String> enumHeaderStringArray, @retrofit2.http.Header("enum_header_string") String enumHeaderString, @retrofit2.http.Query("enum_query_string_array") CSVParams enumQueryStringArray, @retrofit2.http.Query("enum_query_string") String enumQueryString, @retrofit2.http.Query("enum_query_integer") Integer enumQueryInteger, @retrofit2.http.Field("enum_query_double") Double enumQueryDouble
   );
 
 }

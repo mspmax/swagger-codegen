@@ -1,4 +1,6 @@
 {{>licenseInfo}}
+/* tslint:disable:no-unused-variable member-ordering */
+
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { Http, Headers, URLSearchParams }                    from '@angular/http';
 import { RequestMethod, RequestOptions, RequestOptionsArgs } from '@angular/http';
@@ -8,10 +10,11 @@ import { Observable }                                        from 'rxjs/Observab
 import 'rxjs/add/operator/map';
 
 import * as models                                           from '../model/models';
-import { BASE_PATH }                                         from '../variables';
+import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
-
-/* tslint:disable:no-unused-variable member-ordering */
+{{#withInterfaces}}
+import { {{classname}}Interface }                            from './{{classname}}Interface';
+{{/withInterfaces}}
 
 {{#operations}}
 
@@ -21,8 +24,14 @@ import { Configuration }                                     from '../configurat
  */
 {{/description}}
 @Injectable()
+{{#withInterfaces}}
+export class {{classname}} implements {{classname}}Interface {
+{{/withInterfaces}}
+{{^withInterfaces}}
 export class {{classname}} {
-    protected basePath = '{{basePath}}';
+{{/withInterfaces}}
+
+    protected basePath = '{{{basePath}}}';
     public defaultHeaders: Headers = new Headers();
     public configuration: Configuration = new Configuration();
 
@@ -47,7 +56,7 @@ export class {{classname}} {
                 if (response.status === 204) {
                     return undefined;
                 } else {
-                    return response.json();
+                    return response.json() || {};
                 }
             });
     }
@@ -61,7 +70,8 @@ export class {{classname}} {
      {{#allParams}}* @param {{paramName}} {{description}}
      {{/allParams}}*/
     public {{nickname}}WithHttpInfo({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}extraHttpRequestParams?: any): Observable<Response> {
-        const path = this.basePath + `{{path}}`;
+        const path = this.basePath + '{{{path}}}'{{#pathParams}}
+                    .replace('${' + '{{baseName}}' + '}', String({{paramName}})){{/pathParams}};
 
         let queryParameters = new URLSearchParams();
         let headers = new Headers(this.defaultHeaders.toJSON()); // https://github.com/angular/angular/issues/6845
@@ -78,76 +88,124 @@ export class {{classname}} {
 {{/required}}
 {{/allParams}}
 {{#queryParams}}
-        if ({{paramName}} !== undefined) {
-            queryParameters.set('{{baseName}}', <any>{{paramName}});
+        {{#isListContainer}}
+        if ({{paramName}}) {
+        {{#isCollectionFormatMulti}}
+            {{paramName}}.forEach((element) => {
+                queryParameters.append('{{baseName}}', <any>element);
+            })
+        {{/isCollectionFormatMulti}}
+        {{^isCollectionFormatMulti}}
+            queryParameters.set('{{baseName}}', {{paramName}}.join(COLLECTION_FORMATS['{{collectionFormat}}']));
+        {{/isCollectionFormatMulti}}
         }
+        {{/isListContainer}}
+        {{^isListContainer}}
+        if ({{paramName}} !== undefined) {
+        {{#isDateTime}}
+            queryParameters.set('{{baseName}}', <any>{{paramName}}.toISOString());
+        {{/isDateTime}}
+        {{^isDateTime}}
+            {{#isDate}}
+            queryParameters.set('{{baseName}}', <any>{{paramName}}.toISOString());
+            {{/isDate}}
+            {{^isDate}}
+            queryParameters.set('{{baseName}}', <any>{{paramName}});
+            {{/isDate}}
+        {{/isDateTime}}
+        }
+        {{/isListContainer}}
+
 {{/queryParams}}
+{{#headerParams}}
+        {{#isListContainer}}
+        if ({{paramName}}) {
+            headers.set('{{baseName}}', {{paramName}}.join(COLLECTION_FORMATS['{{collectionFormat}}']));
+        }
+        {{/isListContainer}}
+        {{^isListContainer}}
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
+            headers.set('{{baseName}}', String({{paramName}}));
+        }
+        {{/isListContainer}}
 
-{{#headers}}
-        headers.set('{{baseName}}', String({{paramName}}));
-
-{{/headers}}
-
+{{/headerParams}}
         // to determine the Content-Type header
         let consumes: string[] = [
             {{#consumes}}
-            '{{{mediaType}}}'{{#hasMore}}, {{/hasMore}}
+            '{{{mediaType}}}'{{#hasMore}},{{/hasMore}}
             {{/consumes}}
         ];
 
         // to determine the Accept header
         let produces: string[] = [
             {{#produces}}
-            '{{{mediaType}}}'{{#hasMore}}, {{/hasMore}}
+            '{{{mediaType}}}'{{#hasMore}},{{/hasMore}}
             {{/produces}}
         ];
-        
+
 {{#authMethods}}
         // authentication ({{name}}) required
 {{#isApiKey}}
 {{#isKeyInHeader}}
-        if (this.configuration.apiKey)
-        {
+        if (this.configuration.apiKey) {
             headers.set('{{keyParamName}}', this.configuration.apiKey);
         }
+
 {{/isKeyInHeader}}
 {{#isKeyInQuery}}
-        if (this.configuration.apiKey)
-        {
-            formParams.set('{{keyParamName}}', this.configuration.apiKey);
+        if (this.configuration.apiKey) {
+            queryParameters.set('{{keyParamName}}', this.configuration.apiKey);
         }
+
 {{/isKeyInQuery}}
 {{/isApiKey}}
 {{#isBasic}}
         // http basic authentication required
-        if (this.configuration.username || this.configuration.password)
-        {
+        if (this.configuration.username || this.configuration.password) {
             headers.set('Authorization', 'Basic ' + btoa(this.configuration.username + ':' + this.configuration.password));
         }
+
 {{/isBasic}}
 {{#isOAuth}}
         // oauth required
-        if (this.configuration.accessToken)
-        {
-            headers.set('Authorization', 'Bearer ' + this.configuration.accessToken);
+        if (this.configuration.accessToken) {
+            let accessToken = typeof this.configuration.accessToken === 'function'
+                ? this.configuration.accessToken()
+                : this.configuration.accessToken;
+            headers.set('Authorization', 'Bearer ' + accessToken);
         }
+
 {{/isOAuth}}
 {{/authMethods}}
-            
 {{#hasFormParams}}
         headers.set('Content-Type', 'application/x-www-form-urlencoded');
-{{/hasFormParams}}
 
+{{/hasFormParams}}
 {{#bodyParam}}
         headers.set('Content-Type', 'application/json');
+
 {{/bodyParam}}
-
 {{#formParams}}
-        if ({{paramName}} !== undefined) {
-            formParams.set('{{baseName}}', <any>{{paramName}}); 
+        {{#isListContainer}}
+        if ({{paramName}}) {
+        {{#isCollectionFormatMulti}}
+            {{paramName}}.forEach((element) => {
+                formParams.append('{{baseName}}', <any>element);
+            })
+        {{/isCollectionFormatMulti}}
+        {{^isCollectionFormatMulti}}
+            formParams.set('{{baseName}}', {{paramName}}.join(COLLECTION_FORMATS['{{collectionFormat}}']));
+        {{/isCollectionFormatMulti}}
         }
-{{/formParams}}
+        {{/isListContainer}}
+        {{^isListContainer}}
+        if ({{paramName}} !== undefined) {
+            formParams.set('{{baseName}}', <any>{{paramName}});
+        }
+        {{/isListContainer}}
 
+{{/formParams}}
         let requestOptions: RequestOptionsArgs = new RequestOptions({
             method: {{httpMethod}},
             headers: headers,
@@ -158,8 +216,12 @@ export class {{classname}} {
             body: formParams.toString(),
 {{/hasFormParams}}
             search: queryParameters,
-            responseType: ResponseContentType.Json
+            withCredentials:this.configuration.withCredentials
         });
+        // https://github.com/swagger-api/swagger-codegen/issues/4037
+        if (extraHttpRequestParams) {
+            requestOptions = (<any>Object).assign(requestOptions, extraHttpRequestParams);
+        }
 
         return this.http.request(path, requestOptions);
     }

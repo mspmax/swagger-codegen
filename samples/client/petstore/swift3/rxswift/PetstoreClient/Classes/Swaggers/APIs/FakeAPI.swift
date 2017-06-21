@@ -5,12 +5,225 @@
 // https://github.com/swagger-api/swagger-codegen
 //
 
+import Foundation
 import Alamofire
 import RxSwift
 
 
 
 open class FakeAPI: APIBase {
+    /**
+
+     - parameter body: (body) Input boolean as post body (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func fakeOuterBooleanSerialize(body: OuterBoolean? = nil, completion: @escaping ((_ data: OuterBoolean?,_ error: Error?) -> Void)) {
+        fakeOuterBooleanSerializeWithRequestBuilder(body: body).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+    /**
+
+     - parameter body: (body) Input boolean as post body (optional)
+     - returns: Observable<OuterBoolean>
+     */
+    open class func fakeOuterBooleanSerialize(body: OuterBoolean? = nil) -> Observable<OuterBoolean> {
+        return Observable.create { observer -> Disposable in
+            fakeOuterBooleanSerialize(body: body) { data, error in
+                if let error = error {
+                    observer.on(.error(error as Error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
+
+    /**
+     - POST /fake/outer/boolean
+     - Test serialization of outer boolean types
+     - examples: [{contentType=application/json, example={ }}]
+     
+     - parameter body: (body) Input boolean as post body (optional)
+
+     - returns: RequestBuilder<OuterBoolean> 
+     */
+    open class func fakeOuterBooleanSerializeWithRequestBuilder(body: OuterBoolean? = nil) -> RequestBuilder<OuterBoolean> {
+        let path = "/fake/outer/boolean"
+        let URLString = PetstoreClientAPI.basePath + path
+        let parameters = body?.encodeToJSON() as? [String:AnyObject]
+
+        let url = NSURLComponents(string: URLString)
+
+
+        let requestBuilder: RequestBuilder<OuterBoolean>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "POST", URLString: (url?.string ?? URLString), parameters: parameters, isBody: true)
+    }
+
+    /**
+
+     - parameter body: (body) Input composite as post body (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func fakeOuterCompositeSerialize(body: OuterComposite? = nil, completion: @escaping ((_ data: OuterComposite?,_ error: Error?) -> Void)) {
+        fakeOuterCompositeSerializeWithRequestBuilder(body: body).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+    /**
+
+     - parameter body: (body) Input composite as post body (optional)
+     - returns: Observable<OuterComposite>
+     */
+    open class func fakeOuterCompositeSerialize(body: OuterComposite? = nil) -> Observable<OuterComposite> {
+        return Observable.create { observer -> Disposable in
+            fakeOuterCompositeSerialize(body: body) { data, error in
+                if let error = error {
+                    observer.on(.error(error as Error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
+
+    /**
+     - POST /fake/outer/composite
+     - Test serialization of object with outer number type
+     - examples: [{contentType=application/json, example={
+  "my_string" : { },
+  "my_number" : { },
+  "my_boolean" : { }
+}}]
+     
+     - parameter body: (body) Input composite as post body (optional)
+
+     - returns: RequestBuilder<OuterComposite> 
+     */
+    open class func fakeOuterCompositeSerializeWithRequestBuilder(body: OuterComposite? = nil) -> RequestBuilder<OuterComposite> {
+        let path = "/fake/outer/composite"
+        let URLString = PetstoreClientAPI.basePath + path
+        let parameters = body?.encodeToJSON() as? [String:AnyObject]
+
+        let url = NSURLComponents(string: URLString)
+
+
+        let requestBuilder: RequestBuilder<OuterComposite>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "POST", URLString: (url?.string ?? URLString), parameters: parameters, isBody: true)
+    }
+
+    /**
+
+     - parameter body: (body) Input number as post body (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func fakeOuterNumberSerialize(body: OuterNumber? = nil, completion: @escaping ((_ data: OuterNumber?,_ error: Error?) -> Void)) {
+        fakeOuterNumberSerializeWithRequestBuilder(body: body).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+    /**
+
+     - parameter body: (body) Input number as post body (optional)
+     - returns: Observable<OuterNumber>
+     */
+    open class func fakeOuterNumberSerialize(body: OuterNumber? = nil) -> Observable<OuterNumber> {
+        return Observable.create { observer -> Disposable in
+            fakeOuterNumberSerialize(body: body) { data, error in
+                if let error = error {
+                    observer.on(.error(error as Error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
+
+    /**
+     - POST /fake/outer/number
+     - Test serialization of outer number types
+     - examples: [{contentType=application/json, example={ }}]
+     
+     - parameter body: (body) Input number as post body (optional)
+
+     - returns: RequestBuilder<OuterNumber> 
+     */
+    open class func fakeOuterNumberSerializeWithRequestBuilder(body: OuterNumber? = nil) -> RequestBuilder<OuterNumber> {
+        let path = "/fake/outer/number"
+        let URLString = PetstoreClientAPI.basePath + path
+        let parameters = body?.encodeToJSON() as? [String:AnyObject]
+
+        let url = NSURLComponents(string: URLString)
+
+
+        let requestBuilder: RequestBuilder<OuterNumber>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "POST", URLString: (url?.string ?? URLString), parameters: parameters, isBody: true)
+    }
+
+    /**
+
+     - parameter body: (body) Input string as post body (optional)
+     - parameter completion: completion handler to receive the data and the error objects
+     */
+    open class func fakeOuterStringSerialize(body: OuterString? = nil, completion: @escaping ((_ data: OuterString?,_ error: Error?) -> Void)) {
+        fakeOuterStringSerializeWithRequestBuilder(body: body).execute { (response, error) -> Void in
+            completion(response?.body, error);
+        }
+    }
+
+    /**
+
+     - parameter body: (body) Input string as post body (optional)
+     - returns: Observable<OuterString>
+     */
+    open class func fakeOuterStringSerialize(body: OuterString? = nil) -> Observable<OuterString> {
+        return Observable.create { observer -> Disposable in
+            fakeOuterStringSerialize(body: body) { data, error in
+                if let error = error {
+                    observer.on(.error(error as Error))
+                } else {
+                    observer.on(.next(data!))
+                }
+                observer.on(.completed)
+            }
+            return Disposables.create()
+        }
+    }
+
+    /**
+     - POST /fake/outer/string
+     - Test serialization of outer string types
+     - examples: [{contentType=application/json, example={ }}]
+     
+     - parameter body: (body) Input string as post body (optional)
+
+     - returns: RequestBuilder<OuterString> 
+     */
+    open class func fakeOuterStringSerializeWithRequestBuilder(body: OuterString? = nil) -> RequestBuilder<OuterString> {
+        let path = "/fake/outer/string"
+        let URLString = PetstoreClientAPI.basePath + path
+        let parameters = body?.encodeToJSON() as? [String:AnyObject]
+
+        let url = NSURLComponents(string: URLString)
+
+
+        let requestBuilder: RequestBuilder<OuterString>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
+
+        return requestBuilder.init(method: "POST", URLString: (url?.string ?? URLString), parameters: parameters, isBody: true)
+    }
+
     /**
      To test \"client\" model
      
@@ -39,13 +252,14 @@ open class FakeAPI: APIBase {
                 }
                 observer.on(.completed)
             }
-            return NopDisposable.instance
+            return Disposables.create()
         }
     }
 
     /**
      To test \"client\" model
      - PATCH /fake
+     - To test \"client\" model
      - examples: [{contentType=application/json, example={
   "client" : "aeiou"
 }}]
@@ -58,12 +272,13 @@ open class FakeAPI: APIBase {
         let path = "/fake"
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body.encodeToJSON() as? [String:AnyObject]
- 
-        let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
+        let url = NSURLComponents(string: URLString)
+
+
         let requestBuilder: RequestBuilder<Client>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "PATCH", URLString: URLString, parameters: convertedParameters, isBody: true)
+        return requestBuilder.init(method: "PATCH", URLString: (url?.string ?? URLString), parameters: parameters, isBody: true)
     }
 
     /**
@@ -120,7 +335,7 @@ open class FakeAPI: APIBase {
                 }
                 observer.on(.completed)
             }
-            return NopDisposable.instance
+            return Disposables.create()
         }
     }
 
@@ -152,8 +367,7 @@ open class FakeAPI: APIBase {
     open class func testEndpointParametersWithRequestBuilder(number: Double, double: Double, patternWithoutDelimiter: String, byte: Data, integer: Int32? = nil, int32: Int32? = nil, int64: Int64? = nil, float: Float? = nil, string: String? = nil, binary: Data? = nil, date: Date? = nil, dateTime: Date? = nil, password: String? = nil, callback: String? = nil) -> RequestBuilder<Void> {
         let path = "/fake"
         let URLString = PetstoreClientAPI.basePath + path
-
-        let nillableParameters: [String:Any?] = [
+        let formParams: [String:Any?] = [
             "integer": integer?.encodeToJSON(),
             "int32": int32?.encodeToJSON(),
             "int64": int64?.encodeToJSON(),
@@ -169,14 +383,16 @@ open class FakeAPI: APIBase {
             "password": password,
             "callback": callback
         ]
- 
-        let parameters = APIHelper.rejectNil(nillableParameters)
- 
-        let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
+        let nonNullParameters = APIHelper.rejectNil(formParams)
+        let parameters = APIHelper.convertBoolToString(nonNullParameters)
+
+        let url = NSURLComponents(string: URLString)
+
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: false)
+        return requestBuilder.init(method: "POST", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
     }
 
     /**
@@ -191,6 +407,23 @@ open class FakeAPI: APIBase {
      * enum for parameter enumFormString
      */
     public enum EnumFormString_testEnumParameters: String { 
+        case abc = "_abc"
+        case efg = "-efg"
+        case xyz = "(xyz)"
+    }
+
+    /**
+     * enum for parameter enumHeaderStringArray
+     */
+    public enum EnumHeaderStringArray_testEnumParameters: String { 
+        case greaterThan = ">"
+        case dollar = "$"
+    }
+
+    /**
+     * enum for parameter enumHeaderString
+     */
+    public enum EnumHeaderString_testEnumParameters: String { 
         case abc = "_abc"
         case efg = "-efg"
         case xyz = "(xyz)"
@@ -214,18 +447,36 @@ open class FakeAPI: APIBase {
     }
 
     /**
+     * enum for parameter enumQueryInteger
+     */
+    public enum EnumQueryInteger_testEnumParameters: Int32 { 
+        case _1 = 1
+        case numberminus2 = -2
+    }
+
+    /**
+     * enum for parameter enumQueryDouble
+     */
+    public enum EnumQueryDouble_testEnumParameters: Double { 
+        case _11 = 1.1
+        case numberminus12 = -1.2
+    }
+
+    /**
      To test enum parameters
      
      - parameter enumFormStringArray: (form) Form parameter enum test (string array) (optional)
      - parameter enumFormString: (form) Form parameter enum test (string) (optional, default to -efg)
+     - parameter enumHeaderStringArray: (header) Header parameter enum test (string array) (optional)
+     - parameter enumHeaderString: (header) Header parameter enum test (string) (optional, default to -efg)
      - parameter enumQueryStringArray: (query) Query parameter enum test (string array) (optional)
      - parameter enumQueryString: (query) Query parameter enum test (string) (optional, default to -efg)
      - parameter enumQueryInteger: (query) Query parameter enum test (double) (optional)
      - parameter enumQueryDouble: (form) Query parameter enum test (double) (optional)
      - parameter completion: completion handler to receive the data and the error objects
      */
-    open class func testEnumParameters(enumFormStringArray: [String]? = nil, enumFormString: EnumFormString_testEnumParameters? = nil, enumQueryStringArray: [String]? = nil, enumQueryString: EnumQueryString_testEnumParameters? = nil, enumQueryInteger: Double? = nil, enumQueryDouble: Double? = nil, completion: @escaping ((_ error: Error?) -> Void)) {
-        testEnumParametersWithRequestBuilder(enumFormStringArray: enumFormStringArray, enumFormString: enumFormString, enumQueryStringArray: enumQueryStringArray, enumQueryString: enumQueryString, enumQueryInteger: enumQueryInteger, enumQueryDouble: enumQueryDouble).execute { (response, error) -> Void in
+    open class func testEnumParameters(enumFormStringArray: [String]? = nil, enumFormString: EnumFormString_testEnumParameters? = nil, enumHeaderStringArray: [String]? = nil, enumHeaderString: EnumHeaderString_testEnumParameters? = nil, enumQueryStringArray: [String]? = nil, enumQueryString: EnumQueryString_testEnumParameters? = nil, enumQueryInteger: EnumQueryInteger_testEnumParameters? = nil, enumQueryDouble: EnumQueryDouble_testEnumParameters? = nil, completion: @escaping ((_ error: Error?) -> Void)) {
+        testEnumParametersWithRequestBuilder(enumFormStringArray: enumFormStringArray, enumFormString: enumFormString, enumHeaderStringArray: enumHeaderStringArray, enumHeaderString: enumHeaderString, enumQueryStringArray: enumQueryStringArray, enumQueryString: enumQueryString, enumQueryInteger: enumQueryInteger, enumQueryDouble: enumQueryDouble).execute { (response, error) -> Void in
             completion(error);
         }
     }
@@ -235,15 +486,17 @@ open class FakeAPI: APIBase {
      
      - parameter enumFormStringArray: (form) Form parameter enum test (string array) (optional)
      - parameter enumFormString: (form) Form parameter enum test (string) (optional, default to -efg)
+     - parameter enumHeaderStringArray: (header) Header parameter enum test (string array) (optional)
+     - parameter enumHeaderString: (header) Header parameter enum test (string) (optional, default to -efg)
      - parameter enumQueryStringArray: (query) Query parameter enum test (string array) (optional)
      - parameter enumQueryString: (query) Query parameter enum test (string) (optional, default to -efg)
      - parameter enumQueryInteger: (query) Query parameter enum test (double) (optional)
      - parameter enumQueryDouble: (form) Query parameter enum test (double) (optional)
      - returns: Observable<Void>
      */
-    open class func testEnumParameters(enumFormStringArray: [String]? = nil, enumFormString: EnumFormString_testEnumParameters? = nil, enumQueryStringArray: [String]? = nil, enumQueryString: EnumQueryString_testEnumParameters? = nil, enumQueryInteger: Double? = nil, enumQueryDouble: Double? = nil) -> Observable<Void> {
+    open class func testEnumParameters(enumFormStringArray: [String]? = nil, enumFormString: EnumFormString_testEnumParameters? = nil, enumHeaderStringArray: [String]? = nil, enumHeaderString: EnumHeaderString_testEnumParameters? = nil, enumQueryStringArray: [String]? = nil, enumQueryString: EnumQueryString_testEnumParameters? = nil, enumQueryInteger: EnumQueryInteger_testEnumParameters? = nil, enumQueryDouble: EnumQueryDouble_testEnumParameters? = nil) -> Observable<Void> {
         return Observable.create { observer -> Disposable in
-            testEnumParameters(enumFormStringArray: enumFormStringArray, enumFormString: enumFormString, enumQueryStringArray: enumQueryStringArray, enumQueryString: enumQueryString, enumQueryInteger: enumQueryInteger, enumQueryDouble: enumQueryDouble) { error in
+            testEnumParameters(enumFormStringArray: enumFormStringArray, enumFormString: enumFormString, enumHeaderStringArray: enumHeaderStringArray, enumHeaderString: enumHeaderString, enumQueryStringArray: enumQueryStringArray, enumQueryString: enumQueryString, enumQueryInteger: enumQueryInteger, enumQueryDouble: enumQueryDouble) { error in
                 if let error = error {
                     observer.on(.error(error as Error))
                 } else {
@@ -251,16 +504,19 @@ open class FakeAPI: APIBase {
                 }
                 observer.on(.completed)
             }
-            return NopDisposable.instance
+            return Disposables.create()
         }
     }
 
     /**
      To test enum parameters
      - GET /fake
+     - To test enum parameters
      
      - parameter enumFormStringArray: (form) Form parameter enum test (string array) (optional)
      - parameter enumFormString: (form) Form parameter enum test (string) (optional, default to -efg)
+     - parameter enumHeaderStringArray: (header) Header parameter enum test (string array) (optional)
+     - parameter enumHeaderString: (header) Header parameter enum test (string) (optional, default to -efg)
      - parameter enumQueryStringArray: (query) Query parameter enum test (string array) (optional)
      - parameter enumQueryString: (query) Query parameter enum test (string) (optional, default to -efg)
      - parameter enumQueryInteger: (query) Query parameter enum test (double) (optional)
@@ -268,23 +524,34 @@ open class FakeAPI: APIBase {
 
      - returns: RequestBuilder<Void> 
      */
-    open class func testEnumParametersWithRequestBuilder(enumFormStringArray: [String]? = nil, enumFormString: EnumFormString_testEnumParameters? = nil, enumQueryStringArray: [String]? = nil, enumQueryString: EnumQueryString_testEnumParameters? = nil, enumQueryInteger: Double? = nil, enumQueryDouble: Double? = nil) -> RequestBuilder<Void> {
+    open class func testEnumParametersWithRequestBuilder(enumFormStringArray: [String]? = nil, enumFormString: EnumFormString_testEnumParameters? = nil, enumHeaderStringArray: [String]? = nil, enumHeaderString: EnumHeaderString_testEnumParameters? = nil, enumQueryStringArray: [String]? = nil, enumQueryString: EnumQueryString_testEnumParameters? = nil, enumQueryInteger: EnumQueryInteger_testEnumParameters? = nil, enumQueryDouble: EnumQueryDouble_testEnumParameters? = nil) -> RequestBuilder<Void> {
         let path = "/fake"
         let URLString = PetstoreClientAPI.basePath + path
-
-        let nillableParameters: [String:Any?] = [
-            "enum_query_string_array": enumQueryStringArray,
-            "enum_query_string": enumQueryString?.rawValue,
-            "enum_query_integer": enumQueryInteger
+        let formParams: [String:Any?] = [
+            "enum_form_string_array": enumFormStringArray,
+            "enum_form_string": enumFormString?.rawValue,
+            "enum_query_double": enumQueryDouble?.rawValue
         ]
- 
-        let parameters = APIHelper.rejectNil(nillableParameters)
- 
-        let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
+        let nonNullParameters = APIHelper.rejectNil(formParams)
+        let parameters = APIHelper.convertBoolToString(nonNullParameters)
+
+        let url = NSURLComponents(string: URLString)
+        url?.queryItems = APIHelper.mapValuesToQueryItems(values:[
+            "enum_query_string_array": enumQueryStringArray, 
+            "enum_query_string": enumQueryString?.rawValue, 
+            "enum_query_integer": enumQueryInteger?.rawValue
+        ])
+        
+        let nillableHeaders: [String: Any?] = [
+            "enum_header_string_array": enumHeaderStringArray,
+            "enum_header_string": enumHeaderString?.rawValue
+        ]
+        let headerParameters = APIHelper.rejectNilHeaders(nillableHeaders)
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
-        return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
+        return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false, headers: headerParameters)
     }
 
 }
