@@ -26,6 +26,7 @@ public class TypeScriptAngular2ClientCodegen extends AbstractTypeScriptClientCod
     public static final String NPM_VERSION = "npmVersion";
     public static final String NPM_REPOSITORY = "npmRepository";
     public static final String SNAPSHOT = "snapshot";
+    public static final String WITH_INTERFACES = "withInterfaces";
 
     protected String npmName = null;
     protected String npmVersion = "1.0.0";
@@ -47,6 +48,7 @@ public class TypeScriptAngular2ClientCodegen extends AbstractTypeScriptClientCod
         this.cliOptions.add(new CliOption(NPM_VERSION, "The version of your npm package"));
         this.cliOptions.add(new CliOption(NPM_REPOSITORY, "Use this property to set an url your private npmRepo in the package.json"));
         this.cliOptions.add(new CliOption(SNAPSHOT, "When setting this property to true the version will be suffixed with -SNAPSHOT.yyyyMMddHHmm", BooleanProperty.TYPE).defaultValue(Boolean.FALSE.toString()));
+        this.cliOptions.add(new CliOption(WITH_INTERFACES, "Setting this property to true will generate interfaces next to the default class implementations.", BooleanProperty.TYPE).defaultValue(Boolean.FALSE.toString()));
     }
 
     @Override
@@ -78,6 +80,13 @@ public class TypeScriptAngular2ClientCodegen extends AbstractTypeScriptClientCod
 
         if(additionalProperties.containsKey(NPM_NAME)) {
             addNpmPackageGeneration();
+        }
+
+        if(additionalProperties.containsKey(WITH_INTERFACES)) {
+            boolean withInterfaces = Boolean.parseBoolean(additionalProperties.get(WITH_INTERFACES).toString());
+            if (withInterfaces) {
+                apiTemplateFiles.put("apiInterface.mustache", "Interface.ts");
+            }
         }
     }
 
@@ -132,7 +141,7 @@ public class TypeScriptAngular2ClientCodegen extends AbstractTypeScriptClientCod
     @Override
     public String getSwaggerType(Property p) {
         String swaggerType = super.getSwaggerType(p);
-        if(languageSpecificPrimitives.contains(swaggerType)) {
+        if(isLanguagePrimitive(swaggerType) || isLanguageGenericType(swaggerType)) {
             return swaggerType;
         }
         return addModelPrefix(swaggerType);
@@ -146,15 +155,19 @@ public class TypeScriptAngular2ClientCodegen extends AbstractTypeScriptClientCod
             type = swaggerType;
         }
 
-        if (!startsWithLanguageSpecificPrimitiv(type)) {
+        if (!isLanguagePrimitive(type) && !isLanguageGenericType(type)) {
             type = "models." + swaggerType;
         }
         return type;
     }
 
-    private boolean startsWithLanguageSpecificPrimitiv(String type) {
-        for (String langPrimitive:languageSpecificPrimitives) {
-            if (type.startsWith(langPrimitive))  {
+    private boolean isLanguagePrimitive(String type) {
+        return languageSpecificPrimitives.contains(type);
+    }
+
+    private boolean isLanguageGenericType(String type) {
+        for (String genericType: languageGenericTypes) {
+            if (type.startsWith(genericType + "<"))  {
                 return true;
             }
         }
@@ -230,4 +243,5 @@ public class TypeScriptAngular2ClientCodegen extends AbstractTypeScriptClientCod
     public void setNpmRepository(String npmRepository) {
         this.npmRepository = npmRepository;
     }
+
 }

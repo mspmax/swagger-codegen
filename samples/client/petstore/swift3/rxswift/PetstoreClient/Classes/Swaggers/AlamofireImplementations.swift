@@ -4,6 +4,7 @@
 // https://github.com/swagger-api/swagger-codegen
 //
 
+import Foundation
 import Alamofire
 
 class AlamofireRequestBuilderFactory: RequestBuilderFactory {
@@ -16,8 +17,8 @@ class AlamofireRequestBuilderFactory: RequestBuilderFactory {
 private var managerStore: [String: Alamofire.SessionManager] = [:]
 
 open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
-    required public init(method: String, URLString: String, parameters: [String : Any]?, isBody: Bool) {
-        super.init(method: method, URLString: URLString, parameters: parameters, isBody: isBody)
+    required public init(method: String, URLString: String, parameters: [String : Any]?, isBody: Bool, headers: [String : String] = [:]) {
+        super.init(method: method, URLString: URLString, parameters: parameters, isBody: isBody, headers: headers)
     }
 
     /**
@@ -28,6 +29,25 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = buildHeaders()
         return Alamofire.SessionManager(configuration: configuration)
+    }
+
+    /**
+     May be overridden by a subclass if you want to control the Content-Type
+     that is given to an uploaded form part.
+
+     Return nil to use the default behavior (inferring the Content-Type from
+     the file extension).  Return the desired Content-Type otherwise.
+     */
+    open func contentTypeForFormPart(fileURL: URL) -> String? {
+        return nil
+    }
+
+    /**
+     May be overridden by a subclass if you want to control the request
+     configuration (e.g. to override the cache policy).
+     */
+    open func makeRequest(manager: SessionManager, method: HTTPMethod, encoding: ParameterEncoding, headers: [String:String]) -> DataRequest {
+        return manager.request(URLString, method: method, parameters: parameters, encoding: encoding, headers: headers)
     }
 
     override open func execute(_ completion: @escaping (_ response: Response<T>?, _ error: Error?) -> Void) {
@@ -47,7 +67,12 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 for (k, v) in self.parameters! {
                     switch v {
                     case let fileURL as URL:
-                        mpForm.append(fileURL, withName: k)
+                        if let mimeType = self.contentTypeForFormPart(fileURL: fileURL) {
+                            mpForm.append(fileURL, withName: k, fileName: fileURL.lastPathComponent, mimeType: mimeType)
+                        }
+                        else {
+                            mpForm.append(fileURL, withName: k)
+                        }
                         break
                     case let string as String:
                         mpForm.append(string.data(using: String.Encoding.utf8)!, withName: k)
@@ -64,7 +89,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 switch encodingResult {
                 case .success(let upload, _, _):
                     if let onProgressReady = self.onProgressReady {
-                        onProgressReady(upload.progress)
+                        onProgressReady(upload.uploadProgress)
                     }
                     self.processRequest(request: upload, managerId, completion)
                 case .failure(let encodingError):
@@ -72,7 +97,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 }
             })
         } else {
-            let request = manager.request(URLString, method: xMethod!, parameters: parameters, encoding: encoding)
+            let request = makeRequest(manager: manager, method: xMethod!, encoding: encoding, headers: headers)
             if let onProgressReady = self.onProgressReady {
                 onProgressReady(request.progress)
             }
@@ -100,7 +125,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 if stringResponse.result.isFailure {
                     completion(
                         nil,
-                        ErrorResponse.Error(stringResponse.response?.statusCode ?? 500, stringResponse.data, stringResponse.result.error!)
+                        ErrorResponse.Error(stringResponse.response?.statusCode ?? 500, stringResponse.data, stringResponse.result.error as Error!)
                     )
                     return
                 }
@@ -161,12 +186,19 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                     return
                 }
 
+                // handle HTTP 204 No Content
+                // NSNull would crash decoders
+                if response.response?.statusCode == 204 && response.result.value is NSNull{
+                    completion(nil, nil)
+                    return;
+                }
+
                 if () is T {
                     completion(Response(response: response.response!, body: (() as! T)), nil)
                     return
                 }
                 if let json: Any = response.result.value {
-                    let body = Decoders.decode(clazz: T.self, source: json as AnyObject)
+                    let body = Decoders.decode(clazz: T.self, source: json as AnyObject, instance: nil)
                     completion(Response(response: response.response!, body: body), nil)
                     return
                 } else if "" is T {
@@ -181,7 +213,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         }
     }
 
-    private func buildHeaders() -> [String: String] {
+    open func buildHeaders() -> [String: String] {
         var httpHeaders = SessionManager.defaultHTTPHeaders
         for (key, value) in self.headers {
             httpHeaders[key] = value

@@ -6,8 +6,7 @@
  *
  * @category Class
  * @package  {{invokerPackage}}
- * @author   http://github.com/swagger-api/swagger-codegen
- * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache License v2
+ * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
 
@@ -25,8 +24,7 @@ namespace {{invokerPackage}};
  *
  * @category Class
  * @package  {{invokerPackage}}
- * @author   http://github.com/swagger-api/swagger-codegen
- * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache License v2
+ * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
 class ObjectSerializer
@@ -34,16 +32,18 @@ class ObjectSerializer
     /**
      * Serialize data
      *
-     * @param mixed $data the data to serialize
+     * @param mixed  $data   the data to serialize
+     * @param string $type   the SwaggerType of the data
+     * @param string $format the format of the Swagger type of the data
      *
      * @return string|object serialized form of $data
      */
-    public static function sanitizeForSerialization($data)
+    public static function sanitizeForSerialization($data, $type = null, $format = null)
     {
         if (is_scalar($data) || null === $data) {
             return $data;
         } elseif ($data instanceof \DateTime) {
-            return $data->format(\DateTime::ATOM);
+            return ($format === 'date') ? $data->format('Y-m-d') : $data->format(\DateTime::ATOM);
         } elseif (is_array($data)) {
             foreach ($data as $property => $value) {
                 $data[$property] = self::sanitizeForSerialization($value);
@@ -51,10 +51,17 @@ class ObjectSerializer
             return $data;
         } elseif (is_object($data)) {
             $values = [];
-            foreach (array_keys($data::swaggerTypes()) as $property) {
+            $formats = $data::swaggerFormats();
+            foreach ($data::swaggerTypes() as $property => $swaggerType) {
                 $getter = $data::getters()[$property];
-                if ($data->$getter() !== null) {
-                    $values[$data::attributeMap()[$property]] = self::sanitizeForSerialization($data->$getter());
+                $value = $data->$getter();
+                if ($value !== null && method_exists($swaggerType, 'getAllowableEnumValues')
+                    && !in_array($value, $swaggerType::getAllowableEnumValues())) {
+                    $imploded = implode("', '", $swaggerType::getAllowableEnumValues());
+                    throw new \InvalidArgumentException("Invalid value for enum '$swaggerType', must be one of: '$imploded'");
+                }
+                if ($value !== null) {
+                    $values[$data::attributeMap()[$property]] = self::sanitizeForSerialization($value, $swaggerType, $formats[$property]);
                 }
             }
             return (object)$values;
@@ -206,7 +213,7 @@ class ObjectSerializer
      *
      * @return object|array|null an single or an array of $class instances
      */
-    public static function deserialize($data, $class, $httpHeaders = null, $discriminator = null)
+    public static function deserialize($data, $class, $httpHeaders = null)
     {
         if (null === $data) {
             return null;
@@ -217,7 +224,7 @@ class ObjectSerializer
                 $subClass_array = explode(',', $inner, 2);
                 $subClass = $subClass_array[1];
                 foreach ($data as $key => $value) {
-                    $deserialized[$key] = self::deserialize($value, $subClass, null, $discriminator);
+                    $deserialized[$key] = self::deserialize($value, $subClass, null);
                 }
             }
             return $deserialized;
@@ -225,7 +232,7 @@ class ObjectSerializer
             $subClass = substr($class, 0, -2);
             $values = [];
             foreach ($data as $key => $value) {
-                $values[] = self::deserialize($value, $subClass, null, $discriminator);
+                $values[] = self::deserialize($value, $subClass, null);
             }
             return $values;
         } elseif ($class === 'object') {
@@ -261,8 +268,15 @@ class ObjectSerializer
             }
 
             return $deserialized;
+        } elseif (method_exists($class, 'getAllowableEnumValues')) {
+            if (!in_array($data, $class::getAllowableEnumValues())) {
+                $imploded = implode("', '", $class::getAllowableEnumValues());
+                throw new \InvalidArgumentException("Invalid value for enum '$class', must be one of: '$imploded'");
+            }
+            return $data;
         } else {
             // If a discriminator is defined and points to a valid subclass, use it.
+            $discriminator = $class::DISCRIMINATOR;
             if (!empty($discriminator) && isset($data->{$discriminator}) && is_string($data->{$discriminator})) {
                 $subclass = '\{{invokerPackage}}\Model\\' . $data->{$discriminator};
                 if (is_subclass_of($subclass, $class)) {
@@ -279,7 +293,7 @@ class ObjectSerializer
 
                 $propertyValue = $data->{$instance::attributeMap()[$property]};
                 if (isset($propertyValue)) {
-                    $instance->$propertySetter(self::deserialize($propertyValue, $type, null, $discriminator));
+                    $instance->$propertySetter(self::deserialize($propertyValue, $type, null));
                 }
             }
             return $instance;
