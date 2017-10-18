@@ -71,6 +71,7 @@ public class PetApi {
         String localVarPath = "/pet";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
@@ -101,7 +102,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "petstore_auth" };
-        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call addPetValidateBeforeCall(Pet body, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling addPet(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = addPetCall(body, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")
@@ -194,6 +213,7 @@ public class PetApi {
             .replaceAll("\\{" + "petId" + "\\}", apiClient.escapeString(petId.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
         if (apiKey != null)
@@ -226,7 +246,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "petstore_auth" };
-        return apiClient.buildCall(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call deletePetValidateBeforeCall(Long petId, String apiKey, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'petId' is set
+        if (petId == null) {
+            throw new ApiException("Missing the required parameter 'petId' when calling deletePet(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = deletePetCall(petId, apiKey, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")
@@ -320,8 +358,9 @@ public class PetApi {
         String localVarPath = "/pet/findByStatus";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
         if (status != null)
-        localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "status", status));
+        localVarCollectionQueryParams.addAll(apiClient.parameterToPairs("csv", "status", status));
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
@@ -352,7 +391,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "petstore_auth" };
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call findPetsByStatusValidateBeforeCall(List<String> status, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'status' is set
+        if (status == null) {
+            throw new ApiException("Missing the required parameter 'status' when calling findPetsByStatus(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = findPetsByStatusCall(status, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")
@@ -447,8 +504,9 @@ public class PetApi {
         String localVarPath = "/pet/findByTags";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
         if (tags != null)
-        localVarQueryParams.addAll(apiClient.parameterToPairs("csv", "tags", tags));
+        localVarCollectionQueryParams.addAll(apiClient.parameterToPairs("csv", "tags", tags));
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
@@ -479,7 +537,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "petstore_auth" };
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call findPetsByTagsValidateBeforeCall(List<String> tags, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'tags' is set
+        if (tags == null) {
+            throw new ApiException("Missing the required parameter 'tags' when calling findPetsByTags(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = findPetsByTagsCall(tags, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")
@@ -575,6 +651,7 @@ public class PetApi {
             .replaceAll("\\{" + "petId" + "\\}", apiClient.escapeString(petId.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
@@ -605,7 +682,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "api_key" };
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call getPetByIdValidateBeforeCall(Long petId, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'petId' is set
+        if (petId == null) {
+            throw new ApiException("Missing the required parameter 'petId' when calling getPetById(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = getPetByIdCall(petId, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")
@@ -700,6 +795,7 @@ public class PetApi {
         String localVarPath = "/pet";
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
@@ -730,7 +826,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "petstore_auth" };
-        return apiClient.buildCall(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call updatePetValidateBeforeCall(Pet body, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling updatePet(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = updatePetCall(body, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")
@@ -824,6 +938,7 @@ public class PetApi {
             .replaceAll("\\{" + "petId" + "\\}", apiClient.escapeString(petId.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
@@ -858,7 +973,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "petstore_auth" };
-        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call updatePetWithFormValidateBeforeCall(Long petId, String name, String status, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'petId' is set
+        if (petId == null) {
+            throw new ApiException("Missing the required parameter 'petId' when calling updatePetWithForm(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = updatePetWithFormCall(petId, name, status, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")
@@ -958,6 +1091,7 @@ public class PetApi {
             .replaceAll("\\{" + "petId" + "\\}", apiClient.escapeString(petId.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
@@ -992,7 +1126,25 @@ public class PetApi {
         }
 
         String[] localVarAuthNames = new String[] { "petstore_auth" };
-        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private com.squareup.okhttp.Call uploadFileValidateBeforeCall(Long petId, String additionalMetadata, File file, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        
+        // verify the required parameter 'petId' is set
+        if (petId == null) {
+            throw new ApiException("Missing the required parameter 'petId' when calling uploadFile(Async)");
+        }
+        
+        
+        com.squareup.okhttp.Call call = uploadFileCall(petId, additionalMetadata, file, progressListener, progressRequestListener);
+        return call;
+
+        
+        
+        
+        
     }
     
     @SuppressWarnings("rawtypes")

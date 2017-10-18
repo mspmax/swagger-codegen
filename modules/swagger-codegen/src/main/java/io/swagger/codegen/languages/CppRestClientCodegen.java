@@ -1,22 +1,47 @@
 package io.swagger.codegen.languages;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import io.swagger.codegen.*;
-import io.swagger.codegen.examples.ExampleGenerator;
+
+import io.swagger.codegen.CliOption;
+import io.swagger.codegen.CodegenConstants;
+import io.swagger.codegen.CodegenModel;
+import io.swagger.codegen.CodegenOperation;
+import io.swagger.codegen.CodegenParameter;
+import io.swagger.codegen.CodegenProperty;
+import io.swagger.codegen.CodegenType;
+import io.swagger.codegen.SupportingFile;
 import io.swagger.codegen.utils.ModelUtils;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
-import io.swagger.models.properties.*;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.BaseIntegerProperty;
+import io.swagger.models.properties.BooleanProperty;
+import io.swagger.models.properties.DateProperty;
+import io.swagger.models.properties.DateTimeProperty;
+import io.swagger.models.properties.DecimalProperty;
+import io.swagger.models.properties.DoubleProperty;
+import io.swagger.models.properties.FileProperty;
+import io.swagger.models.properties.FloatProperty;
+import io.swagger.models.properties.IntegerProperty;
+import io.swagger.models.properties.LongProperty;
+import io.swagger.models.properties.MapProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 
-import java.util.*;
-import java.io.File;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-
-public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfig {
+public class CppRestClientCodegen extends AbstractCppCodegen {
 
     public static final String DECLSPEC = "declspec";
     public static final String DEFAULT_INCLUDE = "defaultInclude";
@@ -30,7 +55,7 @@ public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfi
 
     /**
      * Configures the type of generator.
-     * 
+     *
      * @return the CodegenType for this generator
      * @see io.swagger.codegen.CodegenType
      */
@@ -41,7 +66,7 @@ public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfi
     /**
      * Configures a friendly name for the generator. This will be used by the
      * generator to select the library with the -l flag.
-     * 
+     *
      * @return the friendly name for the generator
      */
     public String getName() {
@@ -51,7 +76,7 @@ public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfi
     /**
      * Returns human-friendly help for the generator. Provide the consumer with
      * help tips, parameters here
-     * 
+     *
      * @return A string value for the help message
      */
     public String getHelp() {
@@ -85,8 +110,6 @@ public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfi
         addOption(DEFAULT_INCLUDE,
                 "The default include statement that should be placed in all headers for including things like the declspec (convention: #include \"Commons.h\" ",
                 this.defaultInclude);
-
-        reservedWords = new HashSet<String>();
 
         supportingFiles.add(new SupportingFile("modelbase-header.mustache", "", "ModelBase.h"));
         supportingFiles.add(new SupportingFile("modelbase-source.mustache", "", "ModelBase.cpp"));
@@ -160,18 +183,6 @@ public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfi
         additionalProperties.put("apiNamespace", apiPackage.replaceAll("\\.", "::"));
         additionalProperties.put("declspec", declspec);
         additionalProperties.put("defaultInclude", defaultInclude);
-    }
-
-    /**
-     * Escapes a reserved word as defined in the `reservedWords` array. Handle
-     * escaping those terms here. This logic is only called if a variable
-     * matches the reseved words
-     * 
-     * @return the escaped term
-     */
-    @Override
-    public String escapeReservedWord(String name) {
-        return "_" + name; // add an underscore to the name
     }
 
     /**
@@ -312,10 +323,10 @@ public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfi
             return "0.0";
         } else if (p instanceof FloatProperty) {
             return "0.0f";
-        } else if (p instanceof IntegerProperty || p instanceof BaseIntegerProperty) {
-            return "0";
         } else if (p instanceof LongProperty) {
             return "0L";
+        } else if (p instanceof IntegerProperty || p instanceof BaseIntegerProperty) {
+            return "0";
         } else if (p instanceof DecimalProperty) {
             return "0.0";
         } else if (p instanceof MapProperty) {
@@ -379,21 +390,6 @@ public class CppRestClientCodegen extends DefaultCodegen implements CodegenConfi
         } else {
             return Character.toUpperCase(type.charAt(0)) + type.substring(1);
         }
-    }
-
-    @Override
-    public String toVarName(String name) {
-        if (typeMapping.keySet().contains(name) || typeMapping.values().contains(name)
-                || importMapping.values().contains(name) || defaultIncludes.contains(name)
-                || languageSpecificPrimitives.contains(name)) {
-            return name;
-        }
-
-        if (name.length() > 1) {
-            return Character.toUpperCase(name.charAt(0)) + name.substring(1);
-        }
-
-        return name;
     }
 
     @Override
